@@ -14,11 +14,11 @@ export const HeroSection: React.FC = () => {
             <span className="mr-2">✨</span>Revolutionary M2M Payments with XLM
           </div>
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-            Bridge Crypto & INR for Seamless Payments
+            Bridge Crypto & Fiat for Seamless Payments
           </h1>
           <p className="text-gray-400 text-lg mb-8">
             CryptoCart enables users to spend Stellar Lumens (XLM) for everyday transactions,
-            while merchants receive Indian Rupees (INR) through our secure escrow system.
+            while merchants receive Local Fiats through our secure escrow system.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button size="lg" asChild>
@@ -40,7 +40,7 @@ export const HeroSection: React.FC = () => {
             </div>
             <div className="flex items-center p-4">
               <CheckCircle2 className="w-5 h-5 text-crypto-neon mr-3 flex-shrink-0" />
-              <p className="text-gray-300">Real-time XLM-INR Rates</p>
+              <p className="text-gray-300">Real-time XLM-FIAT Rates</p>
             </div>
             <div className="flex items-center p-4">
               <CheckCircle2 className="w-5 h-5 text-crypto-neon mr-3 flex-shrink-0" />

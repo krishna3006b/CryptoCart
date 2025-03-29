@@ -6,15 +6,15 @@ export const FAQSection: React.FC = () => {
   const faqs = [
     {
       question: "How does the escrow system work?",
-      answer: "When a user makes a payment in XLM, the tokens are transferred to a secure escrow wallet rather than directly to the merchant. The merchant then sends the equivalent INR amount to the user's specified account and uploads proof. Once the user verifies receipt of the INR, the XLM is released from escrow to the merchant."
+      answer: "When a user makes a payment in XLM, the tokens are transferred to a secure escrow wallet rather than directly to the merchant. The merchant then sends the equivalent Fiat amount to the user's specified account and uploads proof. Once the user verifies receipt of the Fiat, the XLM is released from escrow to the merchant."
     },
     {
-      question: "How is the XLM to INR rate calculated?",
+      question: "How is the XLM to Fiat rate calculated?",
       answer: "We fetch real-time exchange rates from CoinGecko's API to ensure fair and transparent pricing. The rate is locked in at the time of transaction initiation to protect both parties from rate fluctuations during the transaction process."
     },
     {
-      question: "What happens if the merchant doesn't send the INR?",
-      answer: "If a merchant fails to send the INR within the specified timeframe (usually 24 hours), the user can raise a dispute. Our system will investigate, and if the merchant is at fault, the XLM will be returned to the user's wallet."
+      question: "What happens if the merchant doesn't send the Fiat?",
+      answer: "If a merchant fails to send the Fiat within the specified timeframe (usually 15 mins), the user can raise a dispute. Our system will investigate, and if the merchant is at fault, the XLM will be returned to the user's wallet."
     },
     {
       question: "What are Reputation Points (RP)?",
@@ -26,7 +26,7 @@ export const FAQSection: React.FC = () => {
     },
     {
       question: "How long does a typical transaction take?",
-      answer: "The initial XLM transfer to escrow happens within seconds. The total transaction time depends on how quickly the merchant sends the INR payment and the user verifies it. Most transactions complete within a few hours, though same-day completion is common for active merchants."
+      answer: "The initial XLM transfer to escrow happens within seconds. The total transaction time depends on how quickly the merchant sends the Local Fiat payment and the user verifies it. Most transactions complete within a few minutes, though few-seconds completion is common for active merchants."
     }
   ];
 

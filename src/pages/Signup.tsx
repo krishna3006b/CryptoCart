@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,8 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Link, useNavigate } from "react-router-dom";
 import { Logo } from "@/assets/logo";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff, User, Lock, Mail, Store, Users } from "lucide-react";
-import { ReferralInput } from "@/components/signup/ReferralInput";
+import { Eye, EyeOff, User, Lock, Mail, Store } from "lucide-react";
+import axios from 'axios';
 
 const Signup: React.FC = () => {
   const [name, setName] = useState("");
@@ -16,54 +15,47 @@ const Signup: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [userType, setUserType] = useState<"user" | "merchant">("user");
   const [isLoading, setIsLoading] = useState(false);
-  const [referralCode, setReferralCode] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Mock signup - would be replaced with actual registration
-    setTimeout(() => {
-      if (name && email && password) {
-        // Calculate initial RP points
-        let initialRpPoints = 0;
-        
-        // Base RP for new signup
-        initialRpPoints += 50;
-        
-        // Extra RP for referral
-        if (referralCode) {
-          initialRpPoints += 50;
-          
-          // In a real app, we would also award points to the referrer
-          toast({
-            title: "Referral Bonus",
-            description: "You earned 50 RP points from using a referral code!",
-          });
-        }
-
-        toast({
-          title: "Account created",
-          description: `Welcome to XLM Pay Connect, ${name}! You've earned ${initialRpPoints} RP points.`,
-        });
-        
-        // Redirect to the appropriate dashboard
-        if (userType === "user") {
-          navigate("/dashboard");
-        } else {
-          navigate("/merchant");
-        }
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Please fill in all required fields",
-        });
+    try {
+      if (!email || !password) {
+        throw new Error("Please fill in all required fields");
       }
+
+      const response = await axios.post(`http://localhost:5000/api/register`, {
+        email,
+        password,
+        type: userType, // Send userType to backend
+      });
+
+      const { token } = response.data;
+
+      localStorage.setItem('token', token);
+
+      toast({
+        title: "Account created",
+        description: `Welcome to XLM Pay Connect, ${name || email}!`,
+      });
+
+      if (userType === "user") {
+        navigate("/dashboard");
+      } else {
+        navigate("/merchant");
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.response?.data?.message || error.message || "Signup failed",
+      });
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -158,11 +150,6 @@ const Signup: React.FC = () => {
               </button>
             </div>
           </div>
-
-          <ReferralInput 
-            referralCode={referralCode} 
-            setReferralCode={setReferralCode} 
-          />
 
           <div className="space-y-2">
             <div className="flex items-center">

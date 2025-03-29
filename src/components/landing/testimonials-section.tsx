@@ -5,7 +5,7 @@ import { TestimonialCard } from "@/components/ui/testimonial-card";
 export const TestimonialsSection: React.FC = () => {
   const testimonials = [
     {
-      quote: "XLM Pay Connect has revolutionized how I accept payments in my store. The escrow system gives me confidence, and I receive INR while benefiting from crypto.",
+      quote: "XLM Pay Connect has revolutionized how I accept payments in my store. The escrow system gives me confidence, and I receive Fiat while benefiting from crypto.",
       author: "Rajesh Singh",
       role: "Retail Store Owner",
     },

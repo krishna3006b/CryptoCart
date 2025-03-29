@@ -1,12 +1,12 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Logo } from "@/assets/logo";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff, User, Lock } from "lucide-react";
+import axios from 'axios';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -15,27 +15,49 @@ const Login: React.FC = () => {
   const [userType, setUserType] = useState<"user" | "merchant">("user");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Mock login - would be replaced with actual authentication
-    setTimeout(() => {
-      if (email && password) {
-        toast({
-          title: "Success",
-          description: `Logged in as ${userType}`,
-        });
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Please fill in all fields",
-        });
+    try {
+      // Validate inputs
+      if (!email || !password) {
+        throw new Error("Please fill in all fields");
       }
+
+      // Make API call to backend
+      const response = await axios.post(`http://localhost:5000/api/login`, {
+        email,
+        password,
+      });
+
+      const { token } = response.data;
+
+      // Store token in localStorage
+      localStorage.setItem('token', token);
+
+      toast({
+        title: "Success",
+        description: `Logged in as ${userType}.`,
+      });
+
+      // Redirect to appropriate dashboard
+      if (userType === "user") {
+        navigate("/dashboard");
+      } else {
+        navigate("/merchant");
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.response?.data?.message || error.message || "Login failed",
+      });
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   return (

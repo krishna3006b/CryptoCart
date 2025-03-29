@@ -13,7 +13,7 @@ export const HowItWorksSection: React.FC = () => {
     {
       number: "02",
       title: "Enter Amount & Pay",
-      description: "Enter the INR amount, view XLM conversion, and confirm payment.",
+      description: "Enter the Fiat amount, view XLM conversion, and confirm payment.",
       color: "from-blue-600 to-blue-800"
     },
     {
@@ -24,14 +24,14 @@ export const HowItWorksSection: React.FC = () => {
     },
     {
       number: "04",
-      title: "Merchant Sends INR",
-      description: "Merchant sends INR payment to the specified account and uploads proof.",
+      title: "Merchant Sends Fiat",
+      description: "Merchant sends Fiat payment to the specified account and uploads proof.",
       color: "from-violet-600 to-violet-800"
     },
     {
       number: "05",
       title: "User Verifies",
-      description: "User verifies the INR payment receipt and confirms the transaction.",
+      description: "User verifies the Fiat payment receipt and confirms the transaction.",
       color: "from-purple-600 to-purple-800"
     },
     {
@@ -53,7 +53,7 @@ export const HowItWorksSection: React.FC = () => {
             Simple, Secure, and Seamless Process
           </h2>
           <p className="text-gray-400">
-            Follow these steps to make crypto-to-INR payments using XLM Pay Connect, providing 
+            Follow these steps to make crypto-to-Fiat payments using XLM Pay Connect, providing 
             security and convenience for both users and merchants.
           </p>
         </div>

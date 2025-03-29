@@ -15,12 +15,12 @@ export const FeaturesSection: React.FC = () => {
     {
       icon: Shield,
       title: "Secure Escrow",
-      description: "XLM tokens are securely held in escrow until INR payment is verified, ensuring trust between parties."
+      description: "XLM tokens are securely held in escrow until Fiat payment is verified, ensuring trust between parties."
     },
     {
       icon: Zap,
       title: "Instant Transactions",
-      description: "Quick and seamless payments with real-time XLM to INR conversion rates from CoinGecko."
+      description: "Quick and seamless payments with real-time XLM to Fiat conversion rates from CoinGecko."
     },
     {
       icon: BarChart3,
