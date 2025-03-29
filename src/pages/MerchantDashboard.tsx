@@ -29,7 +29,6 @@ import axios from 'axios';
 import io from 'socket.io-client';
 import {jwtDecode} from 'jwt-decode';
 
-// Initialize socket outside the component
 const socket = io('http://localhost:5000', { transports: ['websocket'], autoConnect: false });
 
 interface CustomJwtPayload {
