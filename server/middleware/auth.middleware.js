@@ -1,7 +1,7 @@
 
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = 'secret'; // In production, use environment variable
+const JWT_SECRET = process.env.JWT_SECRET ||'secret'; // In production, use environment variable
 
 export function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];

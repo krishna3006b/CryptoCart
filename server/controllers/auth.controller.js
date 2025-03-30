@@ -3,7 +3,7 @@ import User from '../models/user.model.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = 'secret'; // In production, use environment variable
+const JWT_SECRET = process.env.JWT_SECRET || 'secret';
 
 export const register = async (req, res) => {
   const { email, password, type } = req.body;
