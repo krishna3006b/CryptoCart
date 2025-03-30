@@ -20,7 +20,7 @@ app.use(cors());
 app.use(express.json());
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/xlm-pay-connect', { 
+mongoose.connect(process.env.MONGODB_URL, { 
   useNewUrlParser: true, 
   useUnifiedTopology: true 
 }).then(() => console.log('MongoDB connected'))
@@ -29,11 +29,9 @@ mongoose.connect('mongodb://localhost:27017/xlm-pay-connect', {
 // Setup socket handlers
 setupSocketHandlers(io);
 
-// API routes
 app.use('/api', authRoutes);
 app.use('/api', orderRoutes);
 
-// Global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ message: 'Internal server error', error: err.message });

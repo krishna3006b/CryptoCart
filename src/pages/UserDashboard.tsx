@@ -18,12 +18,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/assets/logo";
-import { WalletConnect } from "@/components/wallet/WalletConnect";
+// import { WalletConnect } from "@/components/wallet/WalletConnect";
 import { useToast } from "@/hooks/use-toast";
 import axios from 'axios';
 import io from 'socket.io-client';
 import { jwtDecode } from 'jwt-decode';
 import { QRCodeSVG as QRCode } from 'qrcode.react';
+import { WalletConnect } from '@/components/wallet/WalletConnect';
 
 // Define the custom JWT payload type
 interface CustomJwtPayload {
@@ -84,14 +85,22 @@ const UserDashboard: React.FC = () => {
     fetchXlmPrice();
   }, []);
 
-  // Handle mock wallet connection
-  const handleWalletConnect = (address: string) => {
+  const handleWalletConnect = async (address: string) => {
     setWalletAddress(address);
     setIsWalletConnected(true);
-    setXlmBalance(500.0);
+    try {
+      const response = await fetch(`https://horizon-testnet.stellar.org/accounts/${address}`);
+      const accountData = await response.json();
+      const xlmBalance = accountData.balances.find(b => b.asset_type === 'native');
+      if (xlmBalance) {
+        setXlmBalance(parseFloat(xlmBalance.balance));
+      }
+    } catch (error) {
+      console.error("Failed to fetch account balance:", error);
+      setXlmBalance(0);
+    }
 
     const token = localStorage.getItem('token');
-    console.log('Token from localStorage:', token); // Debug log
 
     if (token) {
       try {
@@ -118,7 +127,7 @@ const UserDashboard: React.FC = () => {
 
     toast({
       title: "Wallet Connected",
-      description: "Your mock XLM wallet has been successfully connected!",
+      description: "Your wallet has been successfully connected!",
     });
   };
 

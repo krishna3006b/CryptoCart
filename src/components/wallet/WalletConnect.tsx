@@ -1,9 +1,13 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Wallet, Link, ExternalLink } from "lucide-react";
+import { Wallet, ExternalLink } from "lucide-react";
+import { 
+  StellarWalletsKit,
+  WalletNetwork,
+  FreighterModule,
+  FREIGHTER_ID
+} from '@creit.tech/stellar-wallets-kit';
 
 interface WalletConnectProps {
   userType: "user" | "merchant";
@@ -17,35 +21,99 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
   const [walletAddress, setWalletAddress] = useState("");
   const [isConnecting, setIsConnecting] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [stellarKit, setStellarKit] = useState<StellarWalletsKit | null>(null);
   const { toast } = useToast();
 
-  // This would need to be replaced with actual wallet integration
-  const connectWallet = async () => {
-    if (!walletAddress) {
+  // Initialize the Stellar Wallets Kit
+  useEffect(() => {
+    try {
+      const kit = new StellarWalletsKit({
+        network: WalletNetwork.TESTNET, // Use TESTNET for development
+        selectedWalletId: FREIGHTER_ID,
+        modules: [
+          new FreighterModule(),
+        ]
+      });
+      setStellarKit(kit);
+    } catch (error) {
+      console.error("Error initializing Stellar Wallets Kit:", error);
       toast({
         variant: "destructive",
-        title: "Wallet address required",
-        description: "Please enter your XLM wallet address",
+        title: "Wallet Error",
+        description: "Failed to initialize wallet connection. Please make sure Freighter is installed.",
+      });
+    }
+  }, [toast]);
+
+  useEffect(() => {
+    const checkWalletConnection = async () => {
+      if (stellarKit) {
+        try {
+          const { address } = await stellarKit.getAddress();
+          if (address) {
+            setWalletAddress(address);
+            setIsConnected(true);
+          }
+        } catch (error) {
+          console.log("No wallet connected yet");
+        }
+      }
+    };
+
+    checkWalletConnection();
+  }, [stellarKit]);
+
+  const connectWallet = async () => {
+    if (!stellarKit) {
+      toast({
+        variant: "destructive",
+        title: "Wallet Error",
+        description: "Wallet connection is not initialized. Please make sure Freighter is installed.",
       });
       return;
     }
 
     setIsConnecting(true);
 
-    // Simulate wallet connection - would use actual Trust Wallet integration
-    setTimeout(() => {
+    try {
+      const { address } = await stellarKit.getAddress();
+      setWalletAddress(address);
       setIsConnected(true);
-      setIsConnecting(false);
       
       toast({
         title: "Wallet Connected",
-        description: `Successfully connected to ${walletAddress.substring(0, 6)}...${walletAddress.substring(walletAddress.length - 4)}`,
+        description: `Successfully connected to ${address.substring(0, 6)}...${address.substring(address.length - 4)}`,
       });
       
       if (onWalletConnect) {
-        onWalletConnect(walletAddress);
+        onWalletConnect(address);
       }
-    }, 1500);
+    } catch (error) {
+      console.error("Error connecting wallet:", error);
+      toast({
+        variant: "destructive",
+        title: "Connection Failed",
+        description: "Failed to connect wallet. Is Freighter installed and unlocked?",
+      });
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
+  const disconnectWallet = () => {
+    setIsConnected(false);
+    setWalletAddress("");
+    toast({
+      title: "Wallet Disconnected",
+      description: "Your wallet has been disconnected.",
+    });
+  };
+
+  const viewOnExplorer = () => {
+    if (walletAddress) {
+      const explorerUrl = `https://stellar.expert/explorer/testnet/account/${walletAddress}`;
+      window.open(explorerUrl, '_blank');
+    }
   };
 
   return (
@@ -55,40 +123,30 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
       {!isConnected ? (
         <div className="space-y-4">
           <p className="text-gray-400">
-            Connect your Trust Wallet to {userType === "user" ? "make payments" : "receive payments"} with XLM.
+            Connect your Freighter Wallet to {userType === "user" ? "make payments" : "receive payments"} with XLM.
           </p>
           
-          <div className="space-y-2">
-            <Input
-              type="text"
-              placeholder="Enter your XLM wallet address"
-              value={walletAddress}
-              onChange={(e) => setWalletAddress(e.target.value)}
-              className="w-full"
-            />
-            <div className="text-xs text-gray-400 flex items-center gap-1">
-              <Link size={14} />
-              <span>
-                Don't have a wallet?{" "}
-                <a 
-                  href="https://trustwallet.com/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-crypto-purple hover:underline"
-                >
-                  Download Trust Wallet
-                </a>
-              </span>
-            </div>
+          <div className="text-xs text-gray-400 flex items-center gap-1 mb-4">
+            <span>
+              Don't have Freighter?{" "}
+              <a 
+                href="https://www.freighter.app/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-crypto-purple hover:underline"
+              >
+                Get Freighter Wallet
+              </a>
+            </span>
           </div>
           
           <Button 
             onClick={connectWallet} 
-            disabled={isConnecting} 
+            disabled={isConnecting || !stellarKit} 
             className="w-full"
           >
             <Wallet className="mr-2 h-4 w-4" />
-            {isConnecting ? "Connecting..." : "Connect Wallet"}
+            {isConnecting ? "Connecting..." : "Connect Freighter Wallet"}
           </Button>
         </div>
       ) : (
@@ -110,10 +168,7 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
               variant="outline" 
               size="sm" 
               className="flex-1"
-              onClick={() => {
-                setIsConnected(false);
-                setWalletAddress("");
-              }}
+              onClick={disconnectWallet}
             >
               Disconnect
             </Button>
@@ -121,9 +176,7 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
               variant="outline" 
               size="sm" 
               className="flex-1"
-              onClick={() => {
-                window.open(`https://stellar.expert/explorer/public/account/${walletAddress}`, '_blank');
-              }}
+              onClick={viewOnExplorer}
             >
               <ExternalLink className="mr-2 h-4 w-4" />
               View on Explorer
