@@ -1,8 +1,10 @@
 
 import React from "react";
+import { Link } from "react-router-dom";
 
 export const Logo: React.FC<{ className?: string }> = ({ className = "" }) => {
   return (
+    <Link to="/">
     <div className={`flex items-center gap-2 ${className}`}>
       <div className="relative h-8 w-8 rounded-full bg-gradient-to-br from-crypto-purple to-crypto-purple-dark flex items-center justify-center">
         <div className="absolute inset-0 rounded-full animate-pulse-slow bg-crypto-neon/20"></div>
@@ -12,5 +14,6 @@ export const Logo: React.FC<{ className?: string }> = ({ className = "" }) => {
         Crypto<span className="text-crypto-purple">Cart</span>
       </span>
     </div>
+    </Link>
   );
 };

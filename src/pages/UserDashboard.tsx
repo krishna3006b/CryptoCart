@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { 
-  Store, 
-  Package, 
-  History, 
-  Award, 
-  Menu, 
-  Bell, 
-  User, 
+import {
+  Store,
+  Package,
+  History,
+  Award,
+  Menu,
+  Bell,
+  User,
   FileCheck,
   Check,
   Clock,
@@ -14,7 +14,9 @@ import {
   X,
   QrCode,
   Wallet,
+  LogOut
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/assets/logo";
@@ -48,6 +50,7 @@ const UserDashboard: React.FC = () => {
   const [currentOrder, setCurrentOrder] = useState<any>(null);
   const [completedOrders, setCompletedOrders] = useState<any[]>([]);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Connect socket on mount
   useEffect(() => {
@@ -105,7 +108,7 @@ const UserDashboard: React.FC = () => {
     if (token) {
       try {
         const decoded = jwtDecode<CustomJwtPayload>(token);
-        console.log('Decoded JWT:', decoded); // Debug log
+        console.log('Decoded JWT:', decoded);
         socket.emit('userOnline', decoded.id);
         console.log(`User ${decoded.id} emitted userOnline`);
       } catch (error) {
@@ -129,6 +132,15 @@ const UserDashboard: React.FC = () => {
       title: "Wallet Connected",
       description: "Your wallet has been successfully connected!",
     });
+  };
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    socket.disconnect();
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out.",
+    });
+    navigate('/');
   };
 
   // Real-time proof upload handling
@@ -236,16 +248,16 @@ const UserDashboard: React.FC = () => {
       <div className={`fixed md:static inset-0 z-40 md:z-auto bg-crypto-dark md:block glass-card md:w-64 md:h-screen p-4 md:p-6 transition-all duration-300 ${showMobileMenu ? "block" : "hidden"}`}>
         <div className="flex justify-between items-center mb-8">
           <Logo />
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="md:hidden" 
+          <Button
+            variant="ghost"
+            size="sm"
+            className="md:hidden"
             onClick={() => setShowMobileMenu(false)}
           >
             <X className="h-5 w-5" />
           </Button>
         </div>
-        
+
         <nav className="space-y-2">
           <a href="#" className="flex items-center p-3 rounded-lg bg-crypto-purple/20 text-crypto-purple">
             <Store className="mr-3 h-5 w-5" />
@@ -264,7 +276,7 @@ const UserDashboard: React.FC = () => {
             <span>Reputation</span>
           </a>
         </nav>
-        
+
         <div className="absolute bottom-6 left-6 right-6">
           <div className="glass-card p-4 rounded-xl mb-4">
             <div className="flex items-center">
@@ -283,17 +295,17 @@ const UserDashboard: React.FC = () => {
           </Button>
         </div>
       </div>
-      
+
       {/* Main Content */}
       <div className="flex-1 md:mx-20">
         {/* Header */}
         <header className="border-b border-white/10 p-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="md:hidden mr-2" 
+              <Button
+                variant="ghost"
+                size="sm"
+                className="md:hidden mr-2"
                 onClick={() => setShowMobileMenu(true)}
               >
                 <Menu className="h-5 w-5" />
@@ -307,10 +319,18 @@ const UserDashboard: React.FC = () => {
               <div className="w-8 h-8 bg-crypto-purple/20 rounded-full flex items-center justify-center">
                 <span className="text-crypto-purple font-semibold">CU</span>
               </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleLogout}
+                title="Logout"
+              >
+                <LogOut className="h-5 w-5" />
+              </Button>
             </div>
           </div>
         </header>
-        
+
         {/* Main Dashboard Content */}
         <main className="p-4 md:p-6">
           {!isWalletConnected ? (
@@ -329,7 +349,7 @@ const UserDashboard: React.FC = () => {
                     <p>≈ ₹{(xlmBalance * xlmPrice).toFixed(2)} INR</p>
                   </div>
                 </div>
-                
+
                 <div className="glass-card rounded-xl p-5 border border-white/10">
                   <div className="flex justify-between items-start">
                     <div>
@@ -339,7 +359,7 @@ const UserDashboard: React.FC = () => {
                     <Clock className="h-10 w-10 text-crypto-purple" />
                   </div>
                 </div>
-                
+
                 <div className="glass-card rounded-xl p-5 border border-white/10">
                   <div className="flex justify-between items-start">
                     <div>
@@ -350,7 +370,7 @@ const UserDashboard: React.FC = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="mt-6">
                 <h3 className="font-semibold mb-4">Create New Order</h3>
                 <div className="flex space-x-4">
@@ -374,7 +394,7 @@ const UserDashboard: React.FC = () => {
               </div>
             </div>
           )}
-          
+
           {/* Current Order */}
           {currentOrder && (
             <div className="glass-card p-6 rounded-2xl mb-6">
@@ -410,7 +430,7 @@ const UserDashboard: React.FC = () => {
               </div>
             </div>
           )}
-          
+
           {/* Completed Orders */}
           <div className="glass-card p-6 rounded-2xl mb-6">
             <h2 className="text-xl font-semibold mb-4">Completed Orders</h2>
@@ -454,7 +474,7 @@ const UserDashboard: React.FC = () => {
               </table>
             </div>
           </div>
-          
+
           {/* Reputation Points Overview */}
           <div className="glass-card p-6 rounded-2xl">
             <div className="flex justify-between items-center mb-4">
@@ -469,15 +489,15 @@ const UserDashboard: React.FC = () => {
                 <p className="font-semibold">{reputationPoints} RP</p>
               </div>
               <div className="w-full bg-gray-700 rounded-full h-2.5">
-                <div 
-                  className="bg-crypto-purple h-2.5 rounded-full" 
+                <div
+                  className="bg-crypto-purple h-2.5 rounded-full"
                   style={{ width: `${Math.min((reputationPoints / 100) * 100, 100)}%` }}
                 ></div>
               </div>
               <p className="text-sm text-gray-400 mt-2">
-                {reputationPoints < 50 
+                {reputationPoints < 50
                   ? "Basic - Earn 20 RP per order"
-                  : reputationPoints < 100 
+                  : reputationPoints < 100
                     ? "Standard - 50 RP more for Fast"
                     : "Fast Processing Unlocked!"}
               </p>

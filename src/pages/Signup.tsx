@@ -30,7 +30,7 @@ const Signup: React.FC = () => {
       const response = await axios.post(`http://localhost:5000/api/register`, {
         email,
         password,
-        type: userType, // Send userType to backend
+        type: userType,
       });
 
       const { token } = response.data;

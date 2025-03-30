@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { 
-  Store, 
-  Package, 
-  History, 
-  Award, 
-  Menu, 
-  Search, 
-  Bell, 
-  User, 
-  ChevronRight, 
+import {
+  Store,
+  Package,
+  History,
+  Award,
+  Menu,
+  Search,
+  Bell,
+  User,
+  ChevronRight,
   FileCheck,
   DollarSign,
   Check,
@@ -18,7 +18,8 @@ import {
   Upload,
   QrCode,
   Wallet,
-  Info
+  Info,
+  LogOut
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,7 +28,8 @@ import { WalletConnect } from "@/components/wallet/WalletConnect";
 import { useToast } from "@/hooks/use-toast";
 import axios from 'axios';
 import io from 'socket.io-client';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from "react-router-dom";
 
 const socket = io('http://localhost:5000', { transports: ['websocket'], autoConnect: false });
 
@@ -51,6 +53,7 @@ const MerchantDashboard: React.FC = () => {
   const [completedOrders, setCompletedOrders] = useState<any[]>([]);
   const [proofFile, setProofFile] = useState<File | null>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Connect socket on mount
   useEffect(() => {
@@ -114,6 +117,17 @@ const MerchantDashboard: React.FC = () => {
     });
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    socket.disconnect();
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out.",
+    });
+    navigate('/');
+  };
+
+
   // Toggle online status
   const toggleOnlineStatus = () => {
     setIsOnline(!isOnline);
@@ -130,8 +144,8 @@ const MerchantDashboard: React.FC = () => {
     }
     toast({
       title: isOnline ? "You're now offline" : "You're now online",
-      description: isOnline 
-        ? "You won't receive new orders while offline" 
+      description: isOnline
+        ? "You won't receive new orders while offline"
         : "You're now visible to customers and can receive orders",
     });
   };
@@ -252,16 +266,16 @@ const MerchantDashboard: React.FC = () => {
       <div className={`fixed md:static inset-0 z-40 md:z-auto bg-crypto-dark md:block glass-card md:w-64 md:h-screen p-4 md:p-6 transition-all duration-300 ${showMobileMenu ? "block" : "hidden"}`}>
         <div className="flex justify-between items-center mb-8">
           <Logo />
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="md:hidden" 
+          <Button
+            variant="ghost"
+            size="sm"
+            className="md:hidden"
             onClick={() => setShowMobileMenu(false)}
           >
             <X className="h-5 w-5" />
           </Button>
         </div>
-        
+
         <nav className="space-y-2">
           <a href="#" className="flex items-center p-3 rounded-lg bg-crypto-purple/20 text-crypto-purple">
             <Store className="mr-3 h-5 w-5" />
@@ -280,7 +294,7 @@ const MerchantDashboard: React.FC = () => {
             <span>Reputation</span>
           </a>
         </nav>
-        
+
         <div className="absolute bottom-6 left-6 right-6">
           <div className="glass-card p-4 rounded-xl mb-4">
             <div className="flex items-center">
@@ -299,17 +313,17 @@ const MerchantDashboard: React.FC = () => {
           </Button>
         </div>
       </div>
-      
+
       {/* Main Content */}
       <div className="flex-1 md:mx-20">
         {/* Header */}
         <header className="border-b border-white/10 p-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="md:hidden mr-2" 
+              <Button
+                variant="ghost"
+                size="sm"
+                className="md:hidden mr-2"
                 onClick={() => setShowMobileMenu(true)}
               >
                 <Menu className="h-5 w-5" />
@@ -317,7 +331,7 @@ const MerchantDashboard: React.FC = () => {
               <h1 className="text-xl font-semibold">Merchant Dashboard</h1>
             </div>
             <div className="flex items-center space-x-3">
-              <Button 
+              <Button
                 variant={isOnline ? "outline" : "default"}
                 size="sm"
                 className={isOnline ? "border-green-500 text-green-500" : ""}
@@ -341,10 +355,18 @@ const MerchantDashboard: React.FC = () => {
               <div className="w-8 h-8 bg-crypto-purple/20 rounded-full flex items-center justify-center">
                 <span className="text-crypto-purple font-semibold">CM</span>
               </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleLogout}
+                title="Logout"
+              >
+                <LogOut className="h-5 w-5" />
+              </Button>
             </div>
           </div>
         </header>
-        
+
         {/* Main Dashboard Content */}
         <main className="p-4 md:p-6">
           {!isWalletConnected ? (
@@ -363,7 +385,7 @@ const MerchantDashboard: React.FC = () => {
                     <p>≈ ₹{(xlmBalance * xlmPrice).toFixed(2)} INR</p>
                   </div>
                 </div>
-                
+
                 <div className="glass-card rounded-xl p-5 border border-white/10">
                   <div className="flex justify-between items-start">
                     <div>
@@ -385,7 +407,7 @@ const MerchantDashboard: React.FC = () => {
                     </div>
                   </div>
                   <div className="mt-4">
-                    <Button 
+                    <Button
                       variant={isOnline ? "outline" : "default"}
                       className="w-full"
                       onClick={toggleOnlineStatus}
@@ -394,7 +416,7 @@ const MerchantDashboard: React.FC = () => {
                     </Button>
                   </div>
                 </div>
-                
+
                 <div className="glass-card rounded-xl p-5 border border-white/10">
                   <div className="flex justify-between items-start">
                     <div>
@@ -410,7 +432,7 @@ const MerchantDashboard: React.FC = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="mt-6">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="font-semibold">Quick Actions</h3>
@@ -432,7 +454,7 @@ const MerchantDashboard: React.FC = () => {
               </div>
             </div>
           )}
-          
+
           {/* Pending Orders */}
           <div className="glass-card p-6 rounded-2xl mb-6">
             <div className="flex justify-between items-center mb-4">
@@ -441,7 +463,7 @@ const MerchantDashboard: React.FC = () => {
                 View All
               </Button>
             </div>
-            
+
             <div className="space-y-4">
               {pendingOrders.length === 0 && (
                 <p className="text-gray-400">No pending orders available.</p>
@@ -516,7 +538,7 @@ const MerchantDashboard: React.FC = () => {
               )}
             </div>
           </div>
-          
+
           {/* Recent Completed Orders */}
           <div className="glass-card p-6 rounded-2xl mb-6">
             <div className="flex justify-between items-center mb-4">
@@ -583,7 +605,7 @@ const MerchantDashboard: React.FC = () => {
               </table>
             </div>
           </div>
-          
+
           {/* Reputation Points Overview */}
           <div className="glass-card p-6 rounded-2xl">
             <div className="flex justify-between items-center mb-4">
@@ -598,15 +620,15 @@ const MerchantDashboard: React.FC = () => {
                 <p className="font-semibold">{reputationPoints} RP</p>
               </div>
               <div className="w-full bg-gray-700 rounded-full h-2.5">
-                <div 
-                  className="bg-crypto-purple h-2.5 rounded-full" 
+                <div
+                  className="bg-crypto-purple h-2.5 rounded-full"
                   style={{ width: `${Math.min((reputationPoints / 100) * 100, 100)}%` }}
                 ></div>
               </div>
               <p className="text-sm text-gray-400 mt-2">
-                {reputationPoints < 50 
+                {reputationPoints < 50
                   ? "Basic Processing - Earn 20 RP per order"
-                  : reputationPoints < 100 
+                  : reputationPoints < 100
                     ? "Standard Processing - 50 RP more for Priority"
                     : "Priority Processing Unlocked!"}
               </p>
