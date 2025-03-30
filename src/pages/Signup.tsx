@@ -17,6 +17,7 @@ const Signup: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const BACKEND = import.meta.env.VITE_BACKEND;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +28,7 @@ const Signup: React.FC = () => {
         throw new Error("Please fill in all required fields");
       }
 
-      const response = await axios.post(`http://localhost:5000/api/register`, {
+      const response = await axios.post(`${BACKEND}/api/register`, {
         email,
         password,
         type: userType,

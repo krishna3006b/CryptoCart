@@ -35,9 +35,9 @@ interface CustomJwtPayload {
   iat?: number;
   exp?: number;
 }
-
+ const BACKEND = import.meta.env.VITE_BACKEND;
 // Initialize socket outside the component
-const socket = io('http://localhost:5000', { transports: ['websocket'], autoConnect: false });
+const socket = io( BACKEND, { transports: ['websocket'], autoConnect: false });
 
 const UserDashboard: React.FC = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -177,7 +177,7 @@ const UserDashboard: React.FC = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        'http://localhost:5000/api/orders',
+        `${BACKEND}/api/orders`,
         { inrAmount: Number(inrAmount) },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -211,7 +211,7 @@ const UserDashboard: React.FC = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        `http://localhost:5000/api/orders/${currentOrder.transactionId}/verify`,
+        `${BACKEND}/api/orders/${currentOrder.transactionId}/verify`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

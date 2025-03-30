@@ -31,7 +31,9 @@ import io from 'socket.io-client';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from "react-router-dom";
 
-const socket = io('http://localhost:5000', { transports: ['websocket'], autoConnect: false });
+const BACKEND = import.meta.env.VITE_BACKEND;
+
+const socket = io(BACKEND, { transports: ['websocket'], autoConnect: false });
 
 interface CustomJwtPayload {
   id: string;
@@ -195,7 +197,7 @@ const MerchantDashboard: React.FC = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        `http://localhost:5000/api/orders/${order.transactionId}/accept`,
+        `${BACKEND}/api/orders/${order.transactionId}/accept`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -232,7 +234,7 @@ const MerchantDashboard: React.FC = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        `http://localhost:5000/api/orders/${acceptedOrder.transactionId}/proof`,
+        `${BACKEND}/api/orders/${acceptedOrder.transactionId}/proof`,
         formData,
         { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' } }
       );
